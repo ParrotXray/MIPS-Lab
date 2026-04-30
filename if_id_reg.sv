@@ -12,14 +12,17 @@ module if_id_reg(
     output logic [31:0] id_instr
 );
     always_ff @(posedge clk or posedge rst) begin
-        if (rst || flush) begin
+        if (rst) begin          // asynchronous reset
             id_pc4   <= '0;
             id_instr <= '0;
-        end else if (write) begin
+        end else if (flush) begin   // synchronous flush → NOP
+            id_pc4   <= '0;
+            id_instr <= '0;
+        end else if (write) begin   // normal update
             id_pc4   <= if_pc4;
             id_instr <= if_instr;
         end
-        // else: hold (stall)
+        // else (!write && !flush): hold value (stall)
     end
 
 endmodule

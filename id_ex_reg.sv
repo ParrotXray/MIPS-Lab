@@ -62,8 +62,22 @@ module id_ex_reg(
     output logic [4:0]  ex_rd
 );
     always_ff @(posedge clk or posedge rst) begin
-        if (rst || flush) begin
-            // Zero all control signals → NOP bubble
+        if (rst) begin              // asynchronous reset
+            {ex_reg_write, ex_mem_to_reg,
+             ex_branch, ex_bne, ex_mem_read, ex_mem_write,
+             ex_jump, ex_jr,
+             ex_reg_dst, ex_alu_src, ex_sign_zero} <= '0;
+            ex_alu_op      <= '0;
+            ex_pc4         <= '0;
+            ex_read_data_1 <= '0;
+            ex_read_data_2 <= '0;
+            ex_sign_imm    <= '0;
+            ex_zero_imm    <= '0;
+            ex_jump_target <= '0;
+            ex_funct       <= '0;
+            ex_shamt       <= '0;
+            ex_rs <= '0; ex_rt <= '0; ex_rd <= '0;
+        end else if (flush) begin   // synchronous flush → NOP bubble
             {ex_reg_write, ex_mem_to_reg,
              ex_branch, ex_bne, ex_mem_read, ex_mem_write,
              ex_jump, ex_jr,
